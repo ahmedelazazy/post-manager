@@ -1,7 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const Post = require('./models/post');
 
 const app = express();
+
+mongoose
+  .connect('mongodb://localhost/posts')
+  .then(() => console.log('Connected to mongodb'))
+  .catch(err => console.log('Error while connecting to mongodb'));
 
 app.use(bodyParser.json());
 
@@ -20,18 +27,19 @@ app.use((req, res, next) => {
 });
 
 app.post('/api/posts', (req, res) => {
-  let post = req.body.post;
-  console.log(post);
-  res.status(201).json({ message: 'data saved successfully' });
+  let post = new Post(req.body.post);
+  post.save().then(post => {
+    res.send();
+  });
 });
 
 app.get('/api/posts', (req, res) => {
-  const posts = [
-    { id: 'nlk3nn32', title: 'Post 1', body: 'Post 1 desc' },
-    { id: 'nlk3nn3222', title: 'Post 2', body: 'Post 2 desc' },
-    { id: 'nlk3nn3332', title: 'Post 3', body: 'Post 3 desc' }
-  ];
-  res.json(posts);
+  Post.find().then(data => res.json(data));
+});
+
+app.delete('/api/posts/:id', (req, res) => {
+  let id = req.params.id;
+  Post.deleteOne({ _id: id }).then(() => res.send());
 });
 
 module.exports = app;
