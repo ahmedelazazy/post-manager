@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const Post = require('./models/post');
+
+const postsRouter = require('./routes/posts');
 
 const app = express();
 
@@ -26,20 +27,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/api/posts', (req, res) => {
-  let post = new Post(req.body.post);
-  post.save().then(post => {
-    res.send();
-  });
-});
-
-app.get('/api/posts', (req, res) => {
-  Post.find().then(data => res.json(data));
-});
-
-app.delete('/api/posts/:id', (req, res) => {
-  let id = req.params.id;
-  Post.deleteOne({ _id: id }).then(() => res.send());
-});
+app.use('/api/posts', postsRouter);
 
 module.exports = app;

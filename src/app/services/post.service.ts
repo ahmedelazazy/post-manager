@@ -29,6 +29,14 @@ export class PostService {
       });
   }
 
+  getById(id) {
+    return this.http.get<any>('http://localhost:3000/api/posts/' + id).pipe(
+      map(post => {
+        return { id: post._id, title: post.title, body: post.body };
+      })
+    );
+  }
+
   getPostsUpdates() {
     return this.postsUpdates.asObservable();
   }
@@ -36,6 +44,14 @@ export class PostService {
   addPost(post: Post) {
     this.http
       .post('http://localhost:3000/api/posts', { post })
+      .subscribe(res => {
+        this.getPosts();
+      });
+  }
+
+  editPost(id, post) {
+    this.http
+      .patch('http://localhost:3000/api/posts/' + id, post)
       .subscribe(res => {
         this.getPosts();
       });
