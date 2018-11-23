@@ -58,12 +58,15 @@ export class PostCreateComponent implements OnInit {
     this.loading = true;
 
     if (this.mode == 'create') {
-      this.postService.addPost(this.form.value);
+      this.postService.addPost(this.form.value).subscribe(() => {
+        this.form.reset();
+        this.router.navigate(['/']);
+      });
     } else {
-      this.postService.editPost(this.id, this.form.value);
+      this.postService.editPost(this.id, this.form.value).subscribe(() => {
+        this.form.reset();
+        this.router.navigate(['/']);
+      });
     }
-
-    this.form.reset();
-    this.router.navigate(['/']);
   }
 }

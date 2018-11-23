@@ -6,9 +6,6 @@
 .center {
   text-align: center;
 }
-mat-spinner {
-  margin: auto;
-}
 
 .image-preview {
   width: 50%;
@@ -20,4 +17,8 @@ mat-spinner {
   width: 100%;
   margin: auto;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+mat-paginator {
+  margin-top: 1rem;
 }

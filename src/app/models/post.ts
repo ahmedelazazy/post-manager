@@ -3,4 +3,5 @@ export class Post {
   title;
   body;
   imagePath;
+  createdBy;
 }
