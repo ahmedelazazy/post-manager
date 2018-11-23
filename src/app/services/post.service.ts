@@ -19,7 +19,12 @@ export class PostService {
       .pipe(
         map(posts =>
           posts.map(post => {
-            return { id: post._id, title: post.title, body: post.body };
+            return {
+              id: post._id,
+              title: post.title,
+              body: post.body,
+              imagePath: post.imagePath
+            };
           })
         )
       )
@@ -32,7 +37,12 @@ export class PostService {
   getById(id) {
     return this.http.get<any>('http://localhost:3000/api/posts/' + id).pipe(
       map(post => {
-        return { id: post._id, title: post.title, body: post.body };
+        return {
+          id: post._id,
+          title: post.title,
+          body: post.body,
+          imagePath: post.imagePath
+        };
       })
     );
   }
@@ -41,27 +51,36 @@ export class PostService {
     return this.postsUpdates.asObservable();
   }
 
-  addPost(post: Post) {
-    this.http
-      .post('http://localhost:3000/api/posts', { post })
-      .subscribe(res => {
-        this.getPosts();
-      });
+  addPost(post) {
+    const postData = new FormData();
+    postData.append('title', post.title);
+    postData.append('body', post.body);
+    postData.append('image', post.attachment, post.title);
+
+    this.http.post('http://localhost:3000/api/posts', postData).subscribe(res => {
+      this.getPosts();
+    });
   }
 
   editPost(id, post) {
-    this.http
-      .patch('http://localhost:3000/api/posts/' + id, post)
-      .subscribe(res => {
+    if (typeof post.attachment === 'string') {
+      this.http.patch('http://localhost:3000/api/posts/' + id, post).subscribe(res => {
         this.getPosts();
       });
+    } else {
+      const postData = new FormData();
+      postData.append('title', post.title);
+      postData.append('body', post.body);
+      postData.append('image', post.attachment, post.title);
+      this.http.patch('http://localhost:3000/api/posts/' + id, postData).subscribe(res => {
+        this.getPosts();
+      });
+    }
   }
 
   deletePost(id) {
-    this.http
-      .delete('http://localhost:3000/api/posts/' + id)
-      .subscribe(data => {
-        this.getPosts();
-      });
+    this.http.delete('http://localhost:3000/api/posts/' + id).subscribe(data => {
+      this.getPosts();
+    });
   }
 }

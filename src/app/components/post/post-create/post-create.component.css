@@ -2,7 +2,19 @@
   width: 100%;
 }
 
-/* button {
-  display: block;
+mat-spinner {
   margin: auto;
-} */
+}
+
+input[type='file'] {
+  visibility: hidden;
+}
+
+.image-preview {
+  width: 8rem;
+  margin: 1rem 0;
+}
+
+.image-preview img {
+  width: 100%;
+}

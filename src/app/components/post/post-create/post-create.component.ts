@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from 'src/app/services/post.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-post-create',
@@ -8,39 +9,61 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./post-create.component.css']
 })
 export class PostCreateComponent implements OnInit {
-  post$;
+  form: FormGroup;
   mode = 'create'; //create - edit
   id = null;
-
-  constructor(
-    private postService: PostService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
+  loading = false;
+  imagePreview = null;
+  constructor(private postService: PostService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
+    this.form = new FormGroup({
+      title: new FormControl(null, { validators: Validators.required }),
+      body: new FormControl(null, { validators: Validators.required }),
+      attachment: new FormControl(null, { validators: Validators.required })
+    });
+
     this.route.params.subscribe(params => {
       if (params['id']) {
+        this.loading = true;
         this.id = params['id'];
         this.mode = 'edit';
-        this.post$ = this.postService.getById(params['id']);
+        this.postService.getById(params['id']).subscribe(post => {
+          this.form.patchValue({ title: post.title, body: post.body, attachment: post.imagePath });
+          this.imagePreview = post.imagePath;
+          this.loading = false;
+        });
       } else {
         this.mode = 'create';
       }
     });
   }
 
-  onSave(form) {
-    if (form.invalid) {
+  onFileChange(event) {
+    const file = event.target.files[0];
+    this.form.patchValue({ attachment: file });
+    this.form.get('attachment').updateValueAndValidity();
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onSave() {
+    if (this.form.invalid) {
       return;
     }
+
+    this.loading = true;
+
     if (this.mode == 'create') {
-      this.postService.addPost(form.value);
+      this.postService.addPost(this.form.value);
     } else {
-      this.postService.editPost(this.id, form.value);
+      this.postService.editPost(this.id, this.form.value);
     }
 
-    form.resetForm();
+    this.form.reset();
     this.router.navigate(['/']);
   }
 }

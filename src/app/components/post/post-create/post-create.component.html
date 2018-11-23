@@ -1,35 +1,45 @@
-<ng-container *ngIf="mode == 'create' || (post$ | async) as post">
-  <mat-card>
-    <form #postForm="ngForm" (submit)="onSave(postForm)">
+<ng-container>
+  <mat-spinner *ngIf="loading"> </mat-spinner>
+  <mat-card *ngIf="!loading">
+    <form [formGroup]="form" (submit)="onSave()">
       <mat-form-field class="example-full-width">
         <input
           matInput
           placeholder="Post title"
-          [ngModel]="post.title"
           name="title"
-          required
-          #title="ngModel"
+          formControlName="title"
         />
-        <mat-error *ngIf="title.invalid">Title is required</mat-error>
+        <mat-error *ngIf="form.get('title').invalid">
+          Title is required
+        </mat-error>
       </mat-form-field>
+
+      <button type="button" mat-stroked-button (click)="fileUpload.click()">
+        Attach File
+      </button>
+      <input type="file" #fileUpload (change)="onFileChange($event)" />
+      <div class="image-preview" *ngIf="imagePreview && imagePreview != ''">
+        <img [src]="imagePreview" alt="form.value.title" />
+      </div>
 
       <mat-form-field class="example-full-width">
         <textarea
           matInput
           placeholder="What's on your mind?"
-          [ngModel]="post.body"
-          required
+          formControlName="body"
           name="body"
-          #body="ngModel"
-        ></textarea>
-        <mat-error *ngIf="body.invalid">Content is required</mat-error>
+        >
+        </textarea>
+        <mat-error *ngIf="form.get('body').invalid">
+          Content is required
+        </mat-error>
       </mat-form-field>
 
       <button
         mat-raised-button
         color="accent"
         type="submit"
-        [disabled]="!postForm.valid"
+        [disabled]="!form.valid"
       >
         Save Post
       </button>

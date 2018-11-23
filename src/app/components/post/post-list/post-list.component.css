@@ -6,3 +6,18 @@
 .center {
   text-align: center;
 }
+mat-spinner {
+  margin: auto;
+}
+
+.image-preview {
+  width: 50%;
+  margin: 1rem 0;
+  margin: auto;
+}
+
+.image-preview img {
+  width: 100%;
+  margin: auto;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
